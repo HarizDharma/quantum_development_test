@@ -1,0 +1,94 @@
+def safe_timezone_convert(datetime_series, target_tz="Asia/Jakarta"):
+    """
+    Safely convert datetime series to target timezone with robust error handling.
+    Returns the series in target timezone without timezone info (naive datetime for Plotly).
+    
+    Args:
+        datetime_series: pandas datetime series
+        target_tz: target timezone string (default: Asia/Jakarta)
+    
+    Returns:
+        pandas datetime series in target timezone (timezone-naive)
+    """
+    try:
+        # Check if series is empty
+        if datetime_series.empty:
+            return datetime_series
+        
+        # Remove any NaT values first
+        if datetime_series.isna().any():
+            print(f"Warning: Found {datetime_series.isna().sum()} NaT values in datetime series")
+            datetime_series = datetime_series.dropna()
+        
+        # Case 1: Already timezone-aware, convert directly
+        if hasattr(datetime_series.dtype, 'tz') and datetime_series.dtype.tz is not None:
+            try:
+                return datetime_series.dt.tz_convert(target_tz).dt.tz_localize(None)
+            except Exception as e:
+                print(f"Warning: Direct tz_convert failed: {e}")
+                pass
+        
+        # Case 2: Timezone-naive, assume UTC first then convert
+        try:
+            return datetime_series.dt.tz_localize("UTC").dt.tz_convert(target_tz).dt.tz_localize(None)
+        except Exception as e:
+            print(f"Warning: UTC localize + convert failed: {e}")
+            pass
+        
+        # Case 3: Try to infer timezone and convert
+        try:
+            # If series has timezone info in index but not in dtype
+            if hasattr(datetime_series, 'dt') and hasattr(datetime_series.dt, 'tz_localize'):
+                return datetime_series.dt.tz_localize("UTC", errors='coerce').dt.tz_convert(target_tz).dt.tz_localize(None)
+        except Exception as e:
+            print(f"Warning: Timezone inference failed: {e}")
+            pass
+            
+        # Case 4: Last resort - return original series
+        print(f"Warning: All timezone conversions failed, returning original datetime series")
+        return datetime_series
+        
+    except Exception as e:
+        print(f"Error in safe_timezone_convert: {e}")
+        # Return original series if all fails
+        return datetime_series
+
+def safe_datetime_convert(dt_value, target_tz="Asia/Jakarta"):
+    """
+    Safely convert single datetime value to target timezone with robust error handling.
+    
+    Args:
+        dt_value: pandas datetime or timestamp
+        target_tz: target timezone string (default: Asia/Jakarta)
+    
+    Returns:
+        datetime value in target timezone (timezone-naive)
+    """
+    try:
+        if pd.isna(dt_value):
+            return dt_value
+            
+        # Convert to pandas datetime if needed
+        if not isinstance(dt_value, pd.Timestamp):
+            dt_value = pd.to_datetime(dt_value)
+        
+        # Case 1: Already timezone-aware, convert directly
+        if dt_value.tzinfo is not None:
+            try:
+                return dt_value.tz_convert(target_tz).tz_localize(None)
+            except Exception:
+                pass
+        
+        # Case 2: Timezone-naive, assume UTC first then convert
+        try:
+            return dt_value.tz_localize("UTC").tz_convert(target_tz).tz_localize(None)
+        except Exception:
+            pass
+            
+        # Case 3: Return original value if all fails
+        return dt_value
+        
+    except Exception as e:
+        print(f"Error in safe_datetime_convert: {e}")
+        return dt_value
+
