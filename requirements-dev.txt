@@ -1,0 +1,19 @@
+# Core
+numpy
+pandas
+requests
+python-dotenv
+
+# Exchange & TA
+ccxt
+TA-Lib
+
+# Plotting / Dash (for legacy app backups)
+plotly
+dash
+
+# OpenAI (for chat tool)
+openai
+
+# Optional ML utils used in fibo wizard
+scikit-learn

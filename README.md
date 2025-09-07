@@ -1,27 +1,47 @@
 Quantum Development Test — Tools & Artifacts Backup
 
-This repository preserves development tools and artifacts that are useful for future reference and testing. It intentionally excludes the production Dash app folder (`dash_app/`), which lives in its own dedicated repository.
+Tujuan
+- Arsip rapi alat/skrip pengembangan dan artefak yang berguna untuk referensi/eksperimen.
+- Tidak menyertakan folder produksi `dash_app/` (punya repo khusus).
+- Tidak menyertakan secrets/artefak runtime (`.env`, venv, logs, cache, state, __pycache__).
 
-Included files
-- app_dash_backup.py — Legacy/backup version of the Dash app (reference implementation and patterns).
-- app_dash.py.backup — Alternate backup of the Dash app code (useful for diffing and recovery).
-- ai_futures_autopilot.py (+ copies) — Experimental futures trading autopilot scripts; various iterations kept for comparison and reuse.
-- ai_trading_chatgpt_bitget.py — Bitget trading tooling with ChatGPT/OpenAI interaction patterns.
-- fibo_wizard_api_with_charts.py — Fibo-based analysis utilities with chart generation.
-- helper_functions.txt — Notes and helper snippets used during development.
-- test_syntax.py — Quick syntax sanity check script.
-- HEDGE_FUND_UI_DOCUMENTATION.md — Hedge fund-grade UI documentation used to guide the app UX redesign.
-- OPTIMIZATION_CHANGELOG.md — Notes on performance and memory optimizations applied across iterations.
-- models/ — Small model/threshold artifacts used by previous experiments (JSON/PKL).
+Struktur Folder
+- legacy/
+  - app_dash_backup.py — Backup/versi lama dari Dash app (referensi pola UI/logic).
+  - app_dash.py.backup — Alternatif backup Dash app.
+- tools/
+  - ai_trading_chatgpt_bitget.py — Tool trading Bitget terintegrasi ChatGPT/OpenAI.
+  - fibo_wizard_api_with_charts.py — Util analisis Fibonacci + charting.
+  - helper_functions.txt — Catatan/snippet bantuan.
+- experiments/
+  - ai_futures_autopilot*.py — Berbagai iterasi autopilot futures untuk eksperimen.
+- models/
+  - global_USDTM_*.json / *.pkl — Artefak model/threshold pendukung eksperimen.
+- docs/
+  - HEDGE_FUND_UI_DOCUMENTATION.md — Panduan UI profesional (hedge fund style).
+  - OPTIMIZATION_CHANGELOG.md — Catatan optimisasi performa/memori.
+- tests/
+  - test_syntax.py — Cek sintaks cepat.
 
-Not included
-- `dash_app/` — The production/minimal app is kept in its own repo.
-- Secrets or runtime files (`.env`, logs, caches, venv, state) are intentionally excluded.
+Dependensi per Skrip (ringkas)
+- tools/ai_trading_chatgpt_bitget.py
+  - ccxt, openai, pandas, TA-Lib, python-dotenv, asyncio
+- tools/fibo_wizard_api_with_charts.py
+  - numpy, pandas, scikit-learn (UndefinedMetricWarning), math/warnings (built-in)
+- legacy/app_dash_backup.py dan legacy/app_dash.py.backup
+  - dash, plotly, pandas, numpy, ccxt, requests, python-dotenv, urllib3
+- experiments/ai_futures_autopilot*.py
+  - numpy, pandas, (beberapa versi menggunakan) requests
 
-Quick notes
-- These artifacts are not guaranteed to run as-is; they serve as a reference and source material for future work.
-- If you adapt any of the scripts, create a fresh virtual environment and install required libraries (dash, plotly, pandas, numpy, ccxt, openai, etc.) based on the script’s imports.
+Instalasi Cepat (opsional untuk eksplorasi)
+- Buat venv Python 3.11, lalu:
+  - `pip install -r requirements-dev.txt`
+  - Atau instal paket sesuai kebutuhan setiap skrip.
 
-Safety
-- Do not add `.env` or any credentials to this repository.
-- Avoid running legacy trading scripts against live exchanges without thorough review.
+Catatan Keamanan
+- Jangan commit `.env` atau kredensial.
+- Hindari menjalankan skrip trading legacy pada mode live tanpa review menyeluruh.
+
+Catatan
+- Artefak di repo ini bersifat referensi; tidak dijamin jalan “as‑is”.
+- Untuk penggunaan produksi, gunakan repo khusus `dash_app/` (dashboard minimal).
